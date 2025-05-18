@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Data;
 use Illuminate\Support\Facades\DB;
 
 class PrediksiController extends Controller
@@ -15,74 +16,105 @@ class PrediksiController extends Controller
     public function proses(Request $request)
     {
         $request->validate([
-            'penjualan' => 'required|numeric',
-            'rijek' => 'required|numeric',
+            'n_pen' => 'required|numeric',
+            'n_rijek' => 'required|numeric',
             'tgl' => 'required|date',
         ]);
 
-        // Ambil data referensi dari tabel 'data' 7 hari terakhir
-        $now = now();
-        $range = [$now->subDays(7)->toDateString(), now()->toDateString()];
+        $penjualan = $request->n_pen;
+        $rijek = $request->n_rijek;
 
-        $p_min = DB::table('data')->whereBetween('tgl', $range)->min('penjualan');
-        $p_max = DB::table('data')->whereBetween('tgl', $range)->max('penjualan');
-        $r_min = DB::table('data')->whereBetween('tgl', $range)->min('rijek');
-        $r_max = DB::table('data')->whereBetween('tgl', $range)->max('rijek');
-        $prd_min = DB::table('data')->whereBetween('tgl', $range)->min('produksi');
-        $prd_max = DB::table('data')->whereBetween('tgl', $range)->max('produksi');
+        // Ambil data 7 hari terakhir
+        $data7hari = Data::orderBy('tgl', 'desc')->take(7)->get();
 
-        // Fuzzifikasi
-        $miu_sedikit_penjualan = ($request->penjualan <= $p_min) ? 1 : (($request->penjualan >= $p_max) ? 0 : ($p_max - $request->penjualan) / ($p_max - $p_min));
-        $miu_banyak_penjualan  = ($request->penjualan <= $p_min) ? 0 : (($request->penjualan >= $p_max) ? 1 : ($request->penjualan - $p_min) / ($p_max - $p_min));
-        $miu_sedikit_rijek     = ($request->rijek <= $r_min) ? 1 : (($request->rijek >= $r_max) ? 0 : ($r_max - $request->rijek) / ($r_max - $r_min));
-        $miu_banyak_rijek      = ($request->rijek <= $r_min) ? 0 : (($request->rijek >= $r_max) ? 1 : ($request->rijek - $r_min) / ($r_max - $r_min));
-
-        // Simpan ke tabel fuzzyfikasi
-        DB::table('fuzzyfikasi')->insert([
-            'mspenjualan' => $miu_sedikit_penjualan,
-            'mbpenjualan' => $miu_banyak_penjualan,
-            'msrijek'     => $miu_sedikit_rijek,
-            'mbrijek'     => $miu_banyak_rijek,
-        ]);
-
-        // Inferensi Rules R1–R4
+        // Hitung min dan max
+        $pen_min = $data7hari->min('penjualan');
+        $pen_max = $data7hari->max('penjualan');
+        $rijek_min = $data7hari->min('rijek');
+        $rijek_max = $data7hari->max('rijek');
+        $prd_min = $data7hari->min('produksi');
+        $prd_max = $data7hari->max('produksi');
         $x = $prd_max - $prd_min;
 
-        $r1 = $prd_min + min($miu_banyak_penjualan, $miu_banyak_rijek) * $x;
-        $r2 = $prd_min + min($miu_banyak_penjualan, $miu_sedikit_rijek) * $x;
-        $r3 = $prd_max - min($miu_sedikit_penjualan, $miu_banyak_rijek) * $x;
-        $r4 = $prd_max - min($miu_sedikit_penjualan, $miu_sedikit_rijek) * $x;
+        // Fuzzifikasi
+        $miu_sedikit_penjualan = ($penjualan <= $pen_min) ? 1 : (($penjualan >= $pen_max) ? 0 : ($pen_max - $penjualan) / ($pen_max - $pen_min));
+        $miu_banyak_penjualan = ($penjualan >= $pen_max) ? 1 : (($penjualan <= $pen_min) ? 0 : ($penjualan - $pen_min) / ($pen_max - $pen_min));
+        $miu_sedikit_rijek = ($rijek <= $rijek_min) ? 1 : (($rijek >= $rijek_max) ? 0 : ($rijek_max - $rijek) / ($rijek_max - $rijek_min));
+        $miu_banyak_rijek = ($rijek >= $rijek_max) ? 1 : (($rijek <= $rijek_min) ? 0 : ($rijek - $rijek_min) / ($rijek_max - $rijek_min));
 
-        DB::table('rule')->insert([
-            'r1' => round($r1),
-            'r2' => round($r2),
-            'r3' => round($r3),
-            'r4' => round($r4),
-        ]);
+        // Inferensi α
+        $α1 = min($miu_banyak_penjualan, $miu_banyak_rijek);
+        $α2 = min($miu_banyak_penjualan, $miu_sedikit_rijek);
+        $α3 = min($miu_sedikit_penjualan, $miu_banyak_rijek);
+        $α4 = min($miu_sedikit_penjualan, $miu_sedikit_rijek);
 
-        // Defuzzifikasi
-        $total_alpha_z = 
-            min($miu_banyak_penjualan, $miu_banyak_rijek) * $r1 +
-            min($miu_banyak_penjualan, $miu_sedikit_rijek) * $r2 +
-            min($miu_sedikit_penjualan, $miu_banyak_rijek) * $r3 +
-            min($miu_sedikit_penjualan, $miu_sedikit_rijek) * $r4;
+        // Hitung z dari tiap aturan (bertambah = max, berkurang = min)
+        $z1 = $prd_min + $α1 * $x; // Rule bertambah
+        $z2 = $prd_min + $α2 * $x;
+        $z3 = $prd_max - $α3 * $x; // Rule berkurang
+        $z4 = $prd_max - $α4 * $x;
 
-        $total_alpha = 
-            min($miu_banyak_penjualan, $miu_banyak_rijek) +
-            min($miu_banyak_penjualan, $miu_sedikit_rijek) +
-            min($miu_sedikit_penjualan, $miu_banyak_rijek) +
-            min($miu_sedikit_penjualan, $miu_sedikit_rijek);
-
+        // Defuzzifikasi (Weighted Average)
+        $total_alpha_z = ($α1 * $z1) + ($α2 * $z2) + ($α3 * $z3) + ($α4 * $z4);
+        $total_alpha = $α1 + $α2 + $α3 + $α4;
         $hasil = ($total_alpha > 0) ? round($total_alpha_z / $total_alpha) : 0;
 
-        DB::table('hasil')->insert([
-            'hasil' => $hasil,
-            'tgl' => $request->tgl
+        
+        // Simpan hasil ke tabel fuzzifikasi dan rule
+        DB::table('fuzzifikasi')->insert([
+            'mspenjualan' => round($miu_sedikit_penjualan, 2),
+            'mbpenjualan' => round($miu_banyak_penjualan, 2),
+            'msrijek' => round($miu_sedikit_rijek, 2),
+            'mbrijek' => round($miu_banyak_rijek, 2),
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
 
-        return redirect()->route('prediksi.hasil')->with('success', 'Prediksi berhasil dihitung');
-    }
+        DB::table('rule')->insert([
+            'r1' => round($z1),
+            'r2' => round($z2),
+            'r3' => round($z3),
+            'r4' => round($z4),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
+        // Simpan ke data produksi baru
+        Data::create([
+            'tgl' => $request->tgl,
+            'penjualan' => $penjualan,
+            'rijek' => $rijek,
+            'produksi' => $hasil,
+        ]);
+        // Simpan prediksi ke tabel prediksi
+        DB::table('prediksi')->insert([
+            'n_pen' => $penjualan,
+            'n_rijek' => $rijek,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        // Simpan hasil ke tabel hasil
+         DB::table('hasil')->insert([
+            'hasil' => $hasil,
+            'tgl' => $request->tgl,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->back()->with('fuzzy', [
+            'miu_sedikit_penjualan' => round($miu_sedikit_penjualan, 2),
+            'miu_banyak_penjualan' => round($miu_banyak_penjualan, 2),
+            'miu_sedikit_rijek' => round($miu_sedikit_rijek, 2),
+            'miu_banyak_rijek' => round($miu_banyak_rijek, 2),
+            'r1' => round($z1),
+            'r2' => round($z2),
+            'r3' => round($z3),
+            'r4' => round($z4),
+            'total_alpha_z' => round($total_alpha_z),
+            'total_alpha' => round($total_alpha, 2),
+            'hasil' => $hasil,
+        ]);
+    }
     public function hasil()
     {
         $data = DB::table('hasil')->orderBy('tgl', 'desc')->get();

@@ -90,7 +90,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
+        return redirect()->route('users.index')->with('error', 'Pengguna berhasil dihapus.');
     }
     // Tampilkan form login
     public function showLogin()
@@ -115,6 +115,6 @@ class UserController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login')->with('success', 'Logout berhasil.');
+        return redirect()->route('login')->with('error', 'Logout berhasil.');
     }
 }

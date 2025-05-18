@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('prediksi', function (Blueprint $table) {
             $table->id();
-            $table->string('n_pro', 50);     // nilai produksi
+            $table->string('n_pen', 50);     // nilai produksi
             $table->string('n_rijek', 50);   // nilai rijek
             $table->timestamps();
         });

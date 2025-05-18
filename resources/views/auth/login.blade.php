@@ -20,7 +20,16 @@
 
     <div class="card">
         <div class="card-body">
-
+            @if (session('error'))
+                <div class="alert alert-danger" id="error-alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success" id="success-alert">
+                    {{ session('success') }}
+                </div>
+            @endif
             {{-- Alert error login --}}
             @if ($errors->has('username'))
                 <div class="alert alert-danger text-center alert-dismissible fade show" role="alert">
@@ -71,5 +80,27 @@
 {{-- JS --}}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const alertError = document.getElementById('error-alert');
+        const alertSuccess = document.getElementById('success-alert');
+
+        if (alertError) {
+            setTimeout(function () {
+                alertError.style.transition = 'opacity 0.5s ease';
+                alertError.style.opacity = 0;
+                setTimeout(() => alertError.remove(), 500);
+            }, 3000);
+        }
+
+        if (alertSuccess) {
+            setTimeout(function () {
+                alertSuccess.style.transition = 'opacity 0.5s ease';
+                alertSuccess.style.opacity = 0;
+                setTimeout(() => alertSuccess.remove(), 500);
+            }, 3000);
+        }
+    });
+</script>
 </body>
 </html>

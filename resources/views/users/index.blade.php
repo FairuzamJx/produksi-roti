@@ -2,6 +2,16 @@
 
 @section('content')
 <div class="card">
+        @if (session('error'))
+            <div class="alert alert-danger" id="error-alert">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-success" id="success-alert">
+                {{ session('success') }}
+            </div>
+        @endif
     <div class="card-header">
         <h3 class="card-title">Daftar Pengguna</h3>
         <a href="/users/create" class="btn btn-primary btn-sm float-right">+Tambah Pengguna</a>
@@ -39,4 +49,27 @@
         </table>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const alertError = document.getElementById('error-alert');
+        const alertSuccess = document.getElementById('success-alert');
+
+        if (alertError) {
+            setTimeout(function () {
+                alertError.style.transition = 'opacity 0.5s ease';
+                alertError.style.opacity = 0;
+                setTimeout(() => alertError.remove(), 500);
+            }, 3000);
+        }
+
+        if (alertSuccess) {
+            setTimeout(function () {
+                alertSuccess.style.transition = 'opacity 0.5s ease';
+                alertSuccess.style.opacity = 0;
+                setTimeout(() => alertSuccess.remove(), 500);
+            }, 3000);
+        }
+    });
+</script>
 @endsection
