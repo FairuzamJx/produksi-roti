@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique(); // unique agar tidak ada duplikat
             $table->string('password');
-            $table->string('role')->default('user'); // <- tambahkan ini
+            $table->string('role'); 
             $table->rememberToken();
             $table->timestamps();
         });

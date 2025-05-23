@@ -30,15 +30,16 @@
             <div class="collapse navbar-collapse order-3" id="navbarCollapse">
                 {{-- Left navbar links --}}
                 <ul class="navbar-nav">
+                    <ul class="navbar-nav">
                     <li class="nav-item"><a href="/dashboard" class="nav-link">Home</a></li>
                     <li class="nav-item"><a href="{{ route('data.index') }}" class="nav-link">Master Data</a></li>
-                    <!-- <li class="nav-item"><a href="{{ route('fuzzy.index') }}" class="nav-link">Fuzzifikasi</a></li>
-                    <li class="nav-item"><a href="{{ route('rule.index') }}" class="nav-link">Rule</a></li> -->
-                    <li class="nav-item">
-                    <a href="{{ route('prediksi.index') }}" class="nav-link"><p>Prediksi Produksi</p></a>
-                    </li>
+                    @role('superadmin|admin')
+                    <li class="nav-item"><a href="{{ route('prediksi.index') }}" class="nav-link"><p>Prediksi Produksi</p></a></li>
+                    @endrole
                     <li class="nav-item"><a href="{{ route('prediksi.hasil') }}" class="nav-link">Hasil</a></li>
+                    @role('superadmin')
                     <li class="nav-item"><a href="{{ route('users.index') }}" class="nav-link">Manajemen User</a></li>
+                    @endrole
                 </ul>
             </div>
 

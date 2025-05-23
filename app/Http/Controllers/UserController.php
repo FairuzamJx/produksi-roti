@@ -34,13 +34,16 @@ class UserController extends Controller
             'role'     => 'required|in:superadmin,admin,user',
         ]);
 
-        // Create new user
-        User::create([
+        // Create new user tanpa isi kolom 'role' langsung
+        $user = User::create([
             'name'     => $request->name,
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role'     => $request->role,
         ]);
+
+        // Assign role menggunakan Spatie
+        $user->assignRole($request->role);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
@@ -66,13 +69,15 @@ class UserController extends Controller
 
         $user->name     = $request->name;
         $user->username = $request->username;
-        $user->role     = $request->role;
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
         $user->save();
+
+        // Sinkronisasi role
+        $user->syncRoles($request->role);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil diperbarui.');
     }

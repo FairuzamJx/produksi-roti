@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Data;
 use App\Models\Hasil;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -14,10 +15,12 @@ class DashboardController extends Controller
         // Hitung jumlah baris data
         $jumlahDataPenjualan = Data::count();
         $jumlahHasilPrediksi = Hasil::count();
+        $jumlahUser = User::count();
 
         return view('dashboard', compact(
             'jumlahDataPenjualan',
             'jumlahHasilPrediksi',
+            'jumlahUser'
         ));
     }
 }

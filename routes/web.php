@@ -29,28 +29,20 @@ Route::get('/login', [UserController::class, 'showLogin'])->name('login');
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth'])->group(function () {
-    // Route untuk daftar pengguna (index)
+// SUPERADMIN: Akses semua fitur
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    // Manajemen User
     Route::get('users', [UserController::class, 'index'])->name('users.index');
-
-    // Taruh route ini sebelum yang pakai {id}
     Route::get('users/create', [UserController::class, 'create'])->name('users.create');
-
-    // Proses tambah pengguna
     Route::post('users', [UserController::class, 'store'])->name('users.store');
-
-    // Route edit juga harus di atas
     Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
-    
-    // Proses edit pengguna
     Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
-    
-    // Proses hapus pengguna
     Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-
-    // Yang ini terakhir! Karena dia pakai {id}
     Route::get('users/{id}', [UserController::class, 'show'])->name('users.show');
+});
 
+// ADMIN DAN SUPERADMIN: Bisa input/edit data, prediksi, dll
+Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     // Route untuk prediksi
     Route::get('/prediksi', [PrediksiController::class, 'index'])->name('prediksi.index');
     Route::post('/prediksi', [PrediksiController::class, 'proses'])->name('prediksi.proses');
@@ -65,16 +57,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/data/{id}', [DataController::class, 'destroy'])->name('data.destroy');
     Route::post('/data/import', [DataController::class, 'import'])->name('data.import');
 
-    //Route untuk hasil
-    Route::get('hasil', [PrediksiController::class, 'index'])->name('hasil.index');
-
-    //Route untuk fuzzyfikasi
-    Route::get('fuzzyfikasi', [FuzzyfikasiController::class, 'index'])->name('fuzzy.index');
-
-    //Route untuk rule
-    Route::get('rule', [RuleController::class, 'index'])->name('rule.index');
-
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Hasil, Fuzzy, Rule
+    Route::get('/hasil', [PrediksiController::class, 'hasil'])->name('hasil.index');
+    Route::get('/fuzzyfikasi', [FuzzyfikasiController::class, 'index'])->name('fuzzy.index');
+    Route::get('/rule', [RuleController::class, 'index'])->name('rule.index');
 });
+
+// USER (Read-Only): Hanya lihat hasil dan data
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/data', [DataController::class, 'index'])->name('data.index.user');
+    Route::get('/hasil-prediksi', [PrediksiController::class, 'hasil'])->name('prediksi.hasil');
+});
+Route::middleware(['auth', 'role:user,admin,superadmin'])->group(function () {
+    Route::get('/data', [DataController::class, 'index'])->name('data.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/hasil-prediksi', [PrediksiController::class, 'hasil'])->name('prediksi.hasil');
+});
+
 
