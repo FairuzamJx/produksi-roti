@@ -11,6 +11,10 @@ class PrediksiController extends Controller
 {
     public function index()
     {
+        $latestDate = \App\Models\Data::max('tgl');
+        $nextDate = \Carbon\Carbon::parse($latestDate)->addDay()->toDateString();
+
+        return view('prediksi.index', compact('nextDate'));
         return view('prediksi.index');
     }
 
@@ -34,8 +38,13 @@ class PrediksiController extends Controller
         $penjualan = $request->n_pen;
         $rijek = $request->n_rijek;
 
-        $data7hari = Data::orderBy('tgl', 'desc')->take(7)->get();
+        $endDate = Carbon::parse($request->tgl)->subDay(); // tanggal prediksi - 1 hari
+        $startDate = Carbon::parse($endDate)->subDays(6); // ambil 6 hari ke belakang
 
+        $data7hari = Data::whereBetween('tgl', [$startDate->toDateString(), $endDate->toDateString()])
+                        ->orderBy('tgl', 'asc')
+                        ->get();
+                        
         $pen_min = $data7hari->min('penjualan');
         $pen_max = $data7hari->max('penjualan');
         $rijek_min = $data7hari->min('rijek');

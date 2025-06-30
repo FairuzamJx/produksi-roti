@@ -34,7 +34,11 @@
             </div>
             <div class="col-md-4">
                 <label for="tgl" class="form-label">Tanggal Prediksi</label>
-                <input type="date" name="tgl" class="form-control" value="{{ old('tgl') }}" required>
+                <input type="date" name="tgl" class="form-control" 
+                value="{{ $nextDate }}" 
+                min="{{ $nextDate }}" 
+                max="{{ $nextDate }}" 
+                readonly required>
             </div>
         </div>
         <button type="submit" class="btn btn-success">Proses Prediksi</button>
@@ -47,31 +51,46 @@
         <hr>
 
         <h5 class="mt-4">Interpretasi Nilai Keanggotaan</h5>
-        <p>Berdasarkan input penjualan dan jumlah produk yang direject:</p>
+        <p>Berdasarkan input penjualan dan jumlah roti yang tidak laku (reject):</p>
         <ul>
-            <li>Penjualan dianggap rendah sebesar: <strong>{{ number_format($fuzzy['miu_sedikit_penjualan'], 3) }}</strong></li>
-            <li>Penjualan dianggap tinggi sebesar: <strong>{{ number_format($fuzzy['miu_banyak_penjualan'], 3) }}</strong></li>
-            <li>Reject dianggap rendah sebesar: <strong>{{ number_format($fuzzy['miu_sedikit_rijek'], 3) }}</strong></li>
-            <li>Reject dianggap tinggi sebesar: <strong>{{ number_format($fuzzy['miu_banyak_rijek'], 3) }}</strong></li>
+            <li>
+                Penjualan dianggap <strong>rendah</strong>: 
+                <strong>{{ number_format($fuzzy['miu_sedikit_penjualan'] * 100, 0) }}%</strong>
+                <br><small class="text-muted">Semakin tinggi persen ini, semakin sedikit roti yang terjual.</small>
+            </li>
+            <li>
+                Penjualan dianggap <strong>tinggi</strong>: 
+                <strong>{{ number_format($fuzzy['miu_banyak_penjualan'] * 100, 0) }}%</strong>
+                <br><small class="text-muted">Angka tinggi menandakan penjualan sedang bagus.</small>
+            </li>
+            <li>
+                Reject dianggap <strong>rendah</strong>: 
+                <strong>{{ number_format($fuzzy['miu_sedikit_rijek'] * 100, 0) }}%</strong>
+                <br><small class="text-muted">Menunjukkan bahwa roti yang dibuang atau tidak terjual sedikit.</small>
+            </li>
+            <li>
+                Reject dianggap <strong>tinggi</strong>: 
+                <strong>{{ number_format($fuzzy['miu_banyak_rijek'] * 100, 0) }}%</strong>
+                <br><small class="text-muted">Jika tinggi, berarti banyak roti tidak laku.</small>
+            </li>
         </ul>
 
-        <h5>Aturan yang Diterapkan</h5>
-        <p>Proses inferensi menggunakan 4 aturan:</p>
+        <h5>Aturan Produksi yang Diterapkan</h5>
         <ul>
-            <li><strong>Aturan 1</strong>: Jika penjualan tinggi dan reject tinggi → Produksi meningkat ke: <strong>{{ round($fuzzy['r1']) }}</strong> roti</li>
-            <li><strong>Aturan 2</strong>: Jika penjualan tinggi dan reject rendah → Produksi meningkat ke: <strong>{{ round($fuzzy['r2']) }}</strong> roti</li>
-            <li><strong>Aturan 3</strong>: Jika penjualan rendah dan reject tinggi → Produksi dikurangi menjadi: <strong>{{ round($fuzzy['r3']) }}</strong> roti</li>
-            <li><strong>Aturan 4</strong>: Jika penjualan rendah dan reject rendah → Produksi dikurangi menjadi: <strong>{{ round($fuzzy['r4']) }}</strong> roti</li>
+            <li><strong>Aturan 1</strong>: Penjualan tinggi & reject tinggi → Produksi naik ke: <strong>{{ round($fuzzy['r1']) }}</strong> roti</li>
+            <li><strong>Aturan 2</strong>: Penjualan tinggi & reject rendah → Produksi naik ke: <strong>{{ round($fuzzy['r2']) }}</strong> roti</li>
+            <li><strong>Aturan 3</strong>: Penjualan rendah & reject tinggi → Produksi turun ke: <strong>{{ round($fuzzy['r3']) }}</strong> roti</li>
+            <li><strong>Aturan 4</strong>: Penjualan rendah & reject rendah → Produksi turun ke: <strong>{{ round($fuzzy['r4']) }}</strong> roti</li>
         </ul>
 
-        <h5>Hasil Akhir Prediksi</h5>
+        <h5>Kesimpulan Akhir</h5>
         <p class="fs-5">
-            Berdasarkan seluruh aturan dan perhitungan fuzzy, sistem menyarankan untuk memproduksi: 
-            <strong>{{ $fuzzy['hasil'] }} roti</strong> pada tanggal <strong>{{ \Carbon\Carbon::createFromFormat('d-m-Y', session('fuzzy')['tgl'])->translatedFormat('d F Y') }}</strong>..
+            Rekomendasi produksi roti untuk tanggal 
+            <strong>{{ \Carbon\Carbon::createFromFormat('d-m-Y', $fuzzy['tgl'])->translatedFormat('d F Y') }}</strong>: 
+            <strong>{{ $fuzzy['hasil'] }} roti</strong>.
         </p>
-
-
     @endif
+
 </div>
 
 <script>
