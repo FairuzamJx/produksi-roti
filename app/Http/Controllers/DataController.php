@@ -53,7 +53,7 @@ class DataController extends Controller
         ]);
     
         $fileSize = $request->file('file')->getSize(); // Ukuran file dalam bytes
-        if ($fileSize < 1048576) { // 1MB = 1048576 bytes
+        if ($fileSize > 10485765) { // 10MB = 1048576 bytes
             return redirect()->back()->with('error', 'Ukuran file terlalu kecil. Minimal 1MB');
         }
 
