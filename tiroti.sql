@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 15, 2025 at 11:12 AM
+-- Generation Time: Aug 08, 2025 at 12:10 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.16
 
@@ -30,25 +30,13 @@ SET time_zone = "+00:00";
 CREATE TABLE `data` (
   `id` bigint UNSIGNED NOT NULL,
   `tgl` date NOT NULL,
+  `nama_roti` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `produksi` int NOT NULL,
   `penjualan` int NOT NULL,
   `rijek` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `data`
---
-
-INSERT INTO `data` (`id`, `tgl`, `produksi`, `penjualan`, `rijek`, `created_at`, `updated_at`) VALUES
-(25, '2025-05-03', 105, 80, 15, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(26, '2025-05-04', 125, 110, 5, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(27, '2025-05-05', 155, 140, 8, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(28, '2025-05-06', 112, 90, 12, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(29, '2025-05-07', 147, 130, 7, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(30, '2025-05-08', 115, 100, 9, '2025-05-10 18:58:55', '2025-05-10 18:58:55'),
-(31, '2025-05-09', 95, 70, 10, '2025-05-10 18:58:55', '2025-05-13 04:03:35');
 
 -- --------------------------------------------------------
 
@@ -69,10 +57,10 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `fuzzyfikasi`
+-- Table structure for table `fuzzifikasi`
 --
 
-CREATE TABLE `fuzzyfikasi` (
+CREATE TABLE `fuzzifikasi` (
   `id` bigint UNSIGNED NOT NULL,
   `mspenjualan` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `mbpenjualan` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -81,18 +69,6 @@ CREATE TABLE `fuzzyfikasi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `fuzzyfikasi`
---
-
-INSERT INTO `fuzzyfikasi` (`id`, `mspenjualan`, `mbpenjualan`, `mbrijek`, `msrijek`, `created_at`, `updated_at`) VALUES
-(4, '0', '1', '0', '1', NULL, NULL),
-(5, '0', '1', '1', '0', NULL, NULL),
-(6, '0', '1', '1', '0', NULL, NULL),
-(7, '0.85714285714286', '0.14285714285714', '1', '0', NULL, NULL),
-(8, '0.14285714285714', '0.85714285714286', '1', '0', NULL, NULL),
-(9, '0.5', '0.5', '1', '0', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -107,15 +83,6 @@ CREATE TABLE `hasil` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `hasil`
---
-
-INSERT INTO `hasil` (`id`, `hasil`, `tgl`, `created_at`, `updated_at`) VALUES
-(7, '104', '2025-05-11', NULL, NULL),
-(8, '146', '2025-05-12', NULL, NULL),
-(9, '121', '2025-05-14', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -142,9 +109,43 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (6, '2025_04_21_051902_create_produksis_table', 1),
 (7, '2025_04_24_065521_create_data_table', 1),
 (8, '2025_04_24_065530_create_prediksi_table', 1),
-(9, '2025_04_24_065539_create_fuzzyfikasi_table', 1),
+(9, '2025_04_24_065539_create_fuzzifikasi_table', 1),
 (10, '2025_04_24_065604_create_rule_table', 1),
-(11, '2025_04_24_065618_create_hasil_table', 1);
+(11, '2025_04_24_065618_create_hasil_table', 1),
+(12, '2025_05_23_075613_create_permission_tables', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_permissions`
+--
+
+CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_has_roles`
+--
+
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `model_has_roles`
+--
+
+INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
+(1, 'App\\Models\\User', 1),
+(2, 'App\\Models\\User', 2),
+(3, 'App\\Models\\User', 3);
 
 -- --------------------------------------------------------
 
@@ -168,6 +169,20 @@ CREATE TABLE `password_reset_tokens` (
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -197,7 +212,7 @@ CREATE TABLE `personal_access_tokens` (
 
 CREATE TABLE `prediksi` (
   `id` bigint UNSIGNED NOT NULL,
-  `n_pro` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `n_pen` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `n_rijek` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -222,6 +237,40 @@ CREATE TABLE `produksis` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
+(1, 'superadmin', 'web', '2025-08-07 17:08:17', '2025-08-07 17:08:17'),
+(2, 'admin', 'web', '2025-08-07 17:08:17', '2025-08-07 17:08:17'),
+(3, 'user', 'web', '2025-08-07 17:08:17', '2025-08-07 17:08:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role_has_permissions`
+--
+
+CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rule`
 --
 
@@ -235,19 +284,6 @@ CREATE TABLE `rule` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `rule`
---
-
-INSERT INTO `rule` (`id`, `r1`, `r2`, `r3`, `r4`, `created_at`, `updated_at`) VALUES
-(3, '0', '0', '0', '0', NULL, NULL),
-(4, '120', '132', '132', '132', NULL, NULL),
-(5, '132', '120', '132', '132', NULL, NULL),
-(6, '132', '120', '132', '132', NULL, NULL),
-(7, '104', '95', '104', '155', NULL, NULL),
-(8, '146', '95', '146', '155', NULL, NULL),
-(9, '121', '95', '121', '147', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -259,7 +295,7 @@ CREATE TABLE `users` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
+  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -270,8 +306,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Superadmin', 'superadmin', '$2y$12$8Y5T1w/eKvj4TxG2Kz61se7hDOjSUNi9agwZ4Mq3nVsYoIya/O1.m', 'superadmin', NULL, '2025-04-29 02:43:22', '2025-04-29 02:43:22'),
-(2, 'fairuz', 'fairuz', '$2y$12$0adCtBf1j.rir4Z1PVcwj.8QxT8ocLAv.Ca2HoCiufbLan8RWkcF.', 'superadmin', NULL, '2025-05-01 23:47:54', '2025-05-01 23:47:54');
+(1, 'Super Admin', 'superadmin', '$2y$12$KNz.jY0bUWlX.Mi2voKmAOAIeYFMcRo/Vg1/Kg90M/hqMBZRuUTGi', 'superadmin', NULL, '2025-08-07 17:08:17', '2025-08-07 17:08:17'),
+(2, 'Admin', 'admin', '$2y$12$SSib7swBLLO2ALALTs0b3OM3Mvyx14O4yix2KFaoVinqMzghgxKZG', 'admin', NULL, '2025-08-07 17:08:17', '2025-08-07 17:08:17'),
+(3, 'User Biasa', 'user', '$2y$12$touniBua1tbGOM68tHYr2OtpRbCcZ7HMhlLkIltfU/UIZ2W24VHAS', 'user', NULL, '2025-08-07 17:08:17', '2025-08-07 17:08:17');
 
 --
 -- Indexes for dumped tables
@@ -291,9 +328,9 @@ ALTER TABLE `failed_jobs`
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
--- Indexes for table `fuzzyfikasi`
+-- Indexes for table `fuzzifikasi`
 --
-ALTER TABLE `fuzzyfikasi`
+ALTER TABLE `fuzzifikasi`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -309,6 +346,20 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
 -- Indexes for table `password_resets`
 --
 ALTER TABLE `password_resets`
@@ -319,6 +370,13 @@ ALTER TABLE `password_resets`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`username`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
 
 --
 -- Indexes for table `personal_access_tokens`
@@ -341,6 +399,20 @@ ALTER TABLE `produksis`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
+
+--
+-- Indexes for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD PRIMARY KEY (`permission_id`,`role_id`),
+  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
+
+--
 -- Indexes for table `rule`
 --
 ALTER TABLE `rule`
@@ -361,7 +433,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `data`
 --
 ALTER TABLE `data`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -370,22 +442,28 @@ ALTER TABLE `failed_jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `fuzzyfikasi`
+-- AUTO_INCREMENT for table `fuzzifikasi`
 --
-ALTER TABLE `fuzzyfikasi`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+ALTER TABLE `fuzzifikasi`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `hasil`
 --
 ALTER TABLE `hasil`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -397,7 +475,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `prediksi`
 --
 ALTER TABLE `prediksi`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `produksis`
@@ -406,16 +484,45 @@ ALTER TABLE `produksis`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `rule`
 --
 ALTER TABLE `rule`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `model_has_permissions`
+--
+ALTER TABLE `model_has_permissions`
+  ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `role_has_permissions`
+--
+ALTER TABLE `role_has_permissions`
+  ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
