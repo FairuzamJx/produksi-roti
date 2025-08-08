@@ -37,6 +37,7 @@
             <tr>
                 <th>No</th>
                 <th>Tanggal</th>
+                <th>Nama Roti</th>
                 <th>Produksi</th>
                 <th>Penjualan</th>
                 <th>Reject Penjualan</th>
@@ -46,8 +47,9 @@
         <tbody>
             @foreach($data as $d)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                <td>{{ $data->firstItem() + $loop->index }}</td>
                 <td>{{ $d->tgl }}</td>
+                <td>{{ $d->nama_roti }}</td>
                 <td>{{ $d->produksi }}</td>
                 <td>{{ $d->penjualan }}</td>
                 <td>{{ $d->rijek }}</td>
@@ -65,6 +67,10 @@
             @endforeach
         </tbody>
     </table>
+       {{-- Pagination --}}
+    <div class="d-flex justify-content-center">
+        {{ $data->links() }}
+    </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

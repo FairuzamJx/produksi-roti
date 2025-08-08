@@ -13,6 +13,7 @@ class Data extends Model
 
     protected $fillable = [
         'tgl',
+        'nama_roti',
         'produksi',
         'penjualan',
         'rijek',

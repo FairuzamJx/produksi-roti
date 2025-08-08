@@ -5,6 +5,7 @@
     <form action="{{ route('data.update', $data->id) }}" method="POST">
         @csrf @method('PUT')
         <input type="date" name="tgl" value="{{ $data->tgl }}" class="form-control mb-2">
+        <input type="text" name="nama_roti" value="{{ $data->nama_roti }}" class="form-control mb-2" placeholder="Nama Roti" required>
         <input type="number" name="produksi" value="{{ $data->produksi }}" class="form-control mb-2">
         <input type="number" name="penjualan" value="{{ $data->penjualan }}" class="form-control mb-2">
         <input type="number" name="rijek" value="{{ $data->rijek }}" class="form-control mb-3">

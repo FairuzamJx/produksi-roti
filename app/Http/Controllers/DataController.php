@@ -10,7 +10,7 @@ class DataController extends Controller
 {
     public function index()
     {
-        $data = Data::all();
+        $data = Data::orderBy('tgl', 'desc')->paginate(10); // Menggunakan paginate untuk membatasi jumlah data yang ditampilkan per halaman
         return view('data.index', compact('data'));
     }
 
@@ -23,6 +23,7 @@ class DataController extends Controller
     {
         $request->validate([
             'tgl' => 'required|date',
+            'nama_roti' => 'required|string|max:255',
             'produksi' => 'required|integer',
             'penjualan' => 'required|integer',
             'rijek' => 'required|integer',
@@ -76,6 +77,7 @@ class DataController extends Controller
     {
         $request->validate([
             'tgl' => 'required|date',
+            'nama_roti' => 'required|string|max:255',
             'produksi' => 'required|integer',
             'penjualan' => 'required|integer',
             'rijek' => 'required|integer',

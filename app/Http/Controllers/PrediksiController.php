@@ -38,8 +38,8 @@ class PrediksiController extends Controller
         $penjualan = $request->n_pen;
         $rijek = $request->n_rijek;
 
-        $endDate = Carbon::parse($request->tgl)->subDay(); // tanggal prediksi - 1 hari
-        $startDate = Carbon::parse($endDate)->subDays(6); // ambil 6 hari ke belakang
+        $endDate = Carbon::parse($request->tgl)->subDay();
+        $startDate = Carbon::parse($endDate)->subDays(6);
 
         $data7hari = Data::whereBetween('tgl', [$startDate->toDateString(), $endDate->toDateString()])
                         ->orderBy('tgl', 'asc')
@@ -90,13 +90,6 @@ class PrediksiController extends Controller
             'updated_at' => now()
         ]);
 
-        Data::create([
-            'tgl' => $request->tgl,
-            'penjualan' => $penjualan,
-            'rijek' => $rijek,
-            'produksi' => $hasil,
-        ]);
-
         DB::table('prediksi')->insert([
             'n_pen' => $penjualan,
             'n_rijek' => $rijek,
@@ -129,7 +122,7 @@ class PrediksiController extends Controller
 
     public function hasil()
     {
-        $data = DB::table('hasil')->orderBy('tgl', 'desc')->get();
+        $data = DB::table('hasil')->orderBy('tgl', 'desc')->paginate(10); // ✅ gunakan paginate
         return view('prediksi.hasil', compact('data'));
     }
 }

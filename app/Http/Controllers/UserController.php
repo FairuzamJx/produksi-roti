@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         // Ambil semua pengguna dari database
-        $users = User::all();
+        $users = User::latest()->paginate(10);
 
         // Kirim data pengguna ke tampilan 'users.index'
         return view('users.index', compact('users'));
@@ -94,6 +94,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
+        // Cek apakah pengguna yang dihapus adalah pengguna yang sedang login
+        if (auth()->id() == $id) {
+        return redirect()->back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
+    }
 
         return redirect()->route('users.index')->with('error', 'Pengguna berhasil dihapus.');
     }

@@ -9,8 +9,8 @@ class HasilController extends Controller
 {
     public function index()
     {
-        $hasil = Hasil::latest()->get();
-        return view('hasil.index', compact('hasil'));
+        $data = Hasil::latest()->paginate(10);
+        return view('hasil.index', compact('data'));
     }
 
     public function store(Request $request)

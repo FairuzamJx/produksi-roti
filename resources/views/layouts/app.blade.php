@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="hold-transition layout-top-nav">
 
@@ -30,19 +31,30 @@
             <div class="collapse navbar-collapse order-3" id="navbarCollapse">
                 {{-- Left navbar links --}}
                 <ul class="navbar-nav">
-                    <ul class="navbar-nav">
-                    <li class="nav-item"><a href="/dashboard" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="{{ route('data.index') }}" class="nav-link">Master Data</a></li>
-                    @role('superadmin|admin')
-                    <li class="nav-item"><a href="{{ route('prediksi.index') }}" class="nav-link"><p>Prediksi Produksi</p></a></li>
-                    @endrole
-                    <li class="nav-item"><a href="{{ route('prediksi.hasil') }}" class="nav-link">Hasil</a></li>
-                    @role('superadmin')
-                    <li class="nav-item"><a href="{{ route('users.index') }}" class="nav-link">Manajemen User</a></li>
-                    @endrole
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('data.index') }}" class="nav-link {{ request()->is('data') ? 'active' : '' }}">Master Data</a>
+                </li>
+
+                @role('superadmin|admin')
+                <li class="nav-item">
+                    <a href="{{ route('prediksi.index') }}" class="nav-link {{ request()->is('prediksi') ? 'active' : '' }}">Prediksi Produksi</a>
+                </li>
+                @endrole
+
+                <li class="nav-item">
+                    <a href="{{ route('prediksi.hasil') }}" class="nav-link {{ request()->is('hasil-prediksi') ? 'active' : '' }}">Hasil</a>
+                </li>
+
+                @role('superadmin')
+                <li class="nav-item">
+                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users') ? 'active' : '' }}">Manajemen User</a>
+                </li>
+                @endrole
                 </ul>
             </div>
-
             {{-- Right navbar --}}
             <ul class="order-1 order-md-3 navbar-nav ml-auto">
                 <li class="nav-item">
