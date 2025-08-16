@@ -18,9 +18,10 @@ class DataImport implements ToCollection
             try {
                 Data::create([
                     'tgl'       => Carbon::createFromFormat('d/m/Y', $row[0])->format('Y-m-d'),
-                    'produksi'  => $row[1],
-                    'penjualan' => $row[2],
-                    'rijek'     => $row[3],
+                    'nama_roti' => $row[1],
+                    'produksi'  => $row[2],
+                    'penjualan' => $row[3],
+                    'rijek'     => $row[4],
                 ]);
             } catch (\Exception $e) {
                 // Optional: Log or handle rows with invalid date format or data
